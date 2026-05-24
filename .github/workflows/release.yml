@@ -35,9 +35,9 @@ jobs:
       - name: Build executable
         run: uv run build-exe
 
-      - name: Sign binary (macOS)
+      - name: Sign all binaries (macOS)
         if: runner.os == 'macOS'
-        run: codesign --force --deep --sign - dist/anizium/anizium
+        run: codesign --force --sign - dist/anizium/anizium
 
       - name: Add macOS install script
         if: runner.os == 'macOS'
@@ -45,8 +45,7 @@ jobs:
           cat > dist/anizium/install.command << 'EOF'
           #!/bin/bash
           DIR="$(cd "$(dirname "$0")" && pwd)"
-          xattr -dr com.apple.quarantine "$DIR/anizium"
-          chmod +x "$DIR/anizium"
+          xattr -dr com.apple.quarantine "$DIR"
           echo "Done! You can now run ./anizium"
           EOF
           chmod +x dist/anizium/install.command
@@ -54,12 +53,12 @@ jobs:
       - name: Package (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: Compress-Archive -Path dist/anizium -DestinationPath anizium-windows.zip
+        run: Compress-Archive -Path dist/anizium/anizium.exe -DestinationPath anizium-windows.zip
 
       - name: Package (Unix)
         if: runner.os != 'Windows'
         shell: bash
-        run: cd dist && zip -r ../anizium-${{ matrix.platform }}.zip anizium/
+        run: zip -j anizium-${{ matrix.platform }}.zip dist/anizium/anizium dist/anizium/install.command 2>/dev/null || zip -j anizium-${{ matrix.platform }}.zip dist/anizium/anizium
 
       - uses: actions/upload-artifact@v4
         with:
