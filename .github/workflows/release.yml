@@ -35,6 +35,10 @@ jobs:
       - name: Build executable
         run: uv run build-exe
 
+      - name: Sign binary (macOS)
+        if: runner.os == 'macOS'
+        run: codesign --force --deep --sign - dist/anizium/anizium
+
       - name: Package (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
