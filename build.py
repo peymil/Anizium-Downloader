@@ -10,7 +10,7 @@ def run(cmd):
 def main():
     run(["playwright", "install", "chromium-headless-shell"])
     run([sys.executable, "-m", "PyInstaller", "anizium.spec", "--noconfirm"])
-    print("\nBuild tamamlandı → dist/anizium/anizium.exe")
+    print("\nBuild tamamlandi -> dist/anizium/anizium.exe")
 
 
 if __name__ == "__main__":
