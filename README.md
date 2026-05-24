@@ -11,21 +11,22 @@ Anizium üzerinden dosya indirmeyi sağlayan terminal aracı.
 * Dublaj dili seçme:
 
 ## Kurulum
-1. [anizcli.zip](../../releases/latest) dosyasını indirip istediğiniz bir klasöre çıkartın.
-2. Klasörün içine girdikten sonra `anizcli.bat` dosyasına çift tıklayarak uygulamayı başlatın. Bu dosya, bilgisayarınızda eksik olan kütüphaneleri (Playwright, yt-dlp vb.) otomatik olarak kuracak ve ardından programı başlatacaktır.
+1. Releases altından son çıkan dosyayı işletim sisteminize göre indirin
+2. Komut satırından ./anzium veya ./anzium.exe yazarak uygulamayı başlatın.
 3. Sadece ilk çalıştırmada Anizium hesabınızın kullanıcı adı ve şifresini soracak.  
    Terminalde girmek istemiyorsanız `config.json` içinden tırnakların içine bilgilerinizi girebilirsiniz.
 
 ### Kaynak Koddan Çalıştırma
 ```bash
-git clone [https://github.com/Kyrienheit/anizium-downloader.git](https://github.com/Kyrienheit/anizium-downloader.git)
-cd anizium-downloader
+Dosyaları git clone veya zip olarak indirin.
 
-pip install -r requirements.txt
+Dosya içerisinde:
+
+uv sync
 
 playwright install chromium
 
-python anizium.py
+uv run main.py
 ```
 
 ## Kullanım
@@ -53,14 +54,6 @@ python anizium.py
 }
 ```
 
-### Gereksinimler
-Bu proje arka planda aşağıdaki kütüphane ve araçları kullanmaktadır:
-
-- playwright
-
-- yt-dlp
-
-- requests
 
 ### SSS
 - "Timeout 10000ms exceeded" hatası alıyorum. - İnternet kesilmiştir veya siteye güncelleme gelmiştir de ben güncellememişimdir.
