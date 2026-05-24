@@ -35,35 +35,29 @@ jobs:
       - name: Build executable
         run: uv run build-exe
 
-      - name: Sign all binaries (macOS)
+      - name: Sign binary (macOS)
         if: runner.os == 'macOS'
-        run: codesign --force --sign - dist/anizium/anizium
+        run: codesign --force --sign - dist/anizium
 
-      - name: Add macOS install script
-        if: runner.os == 'macOS'
-        run: |
-          cat > dist/anizium/install.command << 'EOF'
-          #!/bin/bash
-          DIR="$(cd "$(dirname "$0")" && pwd)"
-          xattr -dr com.apple.quarantine "$DIR"
-          echo "Done! You can now run ./anizium"
-          EOF
-          chmod +x dist/anizium/install.command
-
-      - name: Package (Windows)
+      - name: Rename and prepare artifacts (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
-        run: Compress-Archive -Path dist/anizium/anizium.exe -DestinationPath anizium-windows.zip
+        run: Copy-Item dist/anizium.exe anizium-windows.exe
 
-      - name: Package (Unix)
-        if: runner.os != 'Windows'
+      - name: Rename and prepare artifacts (macOS)
+        if: runner.os == 'macOS'
         shell: bash
-        run: zip -j anizium-${{ matrix.platform }}.zip dist/anizium/anizium dist/anizium/install.command 2>/dev/null || zip -j anizium-${{ matrix.platform }}.zip dist/anizium/anizium
+        run: cp dist/anizium anizium-macos
+
+      - name: Rename and prepare artifacts (Linux)
+        if: runner.os == 'Linux'
+        shell: bash
+        run: cp dist/anizium anizium-linux
 
       - uses: actions/upload-artifact@v4
         with:
           name: anizium-${{ matrix.platform }}
-          path: anizium-${{ matrix.platform }}.zip
+          path: anizium-*
 
   release:
     needs: build
