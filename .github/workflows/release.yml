@@ -39,6 +39,18 @@ jobs:
         if: runner.os == 'macOS'
         run: codesign --force --deep --sign - dist/anizium/anizium
 
+      - name: Add macOS install script
+        if: runner.os == 'macOS'
+        run: |
+          cat > dist/anizium/install.command << 'EOF'
+          #!/bin/bash
+          DIR="$(cd "$(dirname "$0")" && pwd)"
+          xattr -dr com.apple.quarantine "$DIR/anizium"
+          chmod +x "$DIR/anizium"
+          echo "Done! You can now run ./anizium"
+          EOF
+          chmod +x dist/anizium/install.command
+
       - name: Package (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
