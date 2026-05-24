@@ -11,6 +11,15 @@ dependencies = [
     "greenlet",
 ]
 
+[project.scripts]
+build-exe = "build:main"
+
+[tool.uv]
+package = true
+
+[tool.setuptools]
+py-modules = ["build"]
+
 [dependency-groups]
 dev = [
     "pyinstaller",
