@@ -66,7 +66,6 @@ jobs:
           name: anizium-${{ matrix.platform }}
           path: |
             anizium-*
-            Anizium.command
 
   release:
     needs: build

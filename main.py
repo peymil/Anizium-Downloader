@@ -4,11 +4,6 @@ import glob
 import subprocess
 from pathlib import Path
 
-C = "\033[96m"
-Y = "\033[93m"
-R = "\033[0m"
-B = "\033[1m"
-
 
 def _browsers_path():
     if sys.platform == 'win32':
@@ -17,6 +12,16 @@ def _browsers_path():
         return Path.home() / 'Library' / 'Caches' / 'ms-playwright'
     else:
         return Path.home() / '.cache' / 'ms-playwright'
+
+
+# Must be set before any Playwright import or subprocess call so both the
+# install step and the browser launch resolve to the same directory.
+os.environ.setdefault('PLAYWRIGHT_BROWSERS_PATH', str(_browsers_path()))
+
+C = "\033[96m"
+Y = "\033[93m"
+R = "\033[0m"
+B = "\033[1m"
 
 
 def ensure_browser():
