@@ -47,7 +47,16 @@ jobs:
       - name: Rename and prepare artifacts (macOS)
         if: runner.os == 'macOS'
         shell: bash
-        run: cp dist/anizium anizium-macos
+        run: |
+          cp dist/anizium anizium-macos
+          cat > "Anizium.command" << 'EOF'
+          #!/bin/bash
+          DIR="$(cd "$(dirname "$0")" && pwd)"
+          xattr -dr com.apple.quarantine "$DIR/anizium-macos" 2>/dev/null
+          chmod +x "$DIR/anizium-macos"
+          "$DIR/anizium-macos"
+          EOF
+          chmod +x "Anizium.command"
 
       - name: Rename and prepare artifacts (Linux)
         if: runner.os == 'Linux'
@@ -57,7 +66,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: anizium-${{ matrix.platform }}
-          path: anizium-*
+          path: |
+            anizium-*
+            Anizium.command
 
   release:
     needs: build
@@ -72,5 +83,9 @@ jobs:
 
       - uses: softprops/action-gh-release@v2
         with:
-          files: "*.zip"
+          files: |
+            anizium-windows.exe
+            anizium-macos
+            anizium-linux
+            Anizium.command
           generate_release_notes: true

@@ -4,9 +4,6 @@ import logging
 import re
 import json
 
-if getattr(sys, 'frozen', False):
-    os.environ['PLAYWRIGHT_BROWSERS_PATH'] = os.path.join(sys._MEIPASS, 'ms-playwright')
-
 from playwright.sync_api import sync_playwright
 
 os.system("")

@@ -1,25 +1,62 @@
 import sys
 import os
-
-if getattr(sys, 'frozen', False):
-    os.environ['PLAYWRIGHT_BROWSERS_PATH'] = os.path.join(sys._MEIPASS, 'ms-playwright')
+import glob
+import subprocess
+from pathlib import Path
 
 C = "\033[96m"
 Y = "\033[93m"
 R = "\033[0m"
 B = "\033[1m"
 
-def usage():
-    print(f"{B}{C}Anizium Downloader{R}")
-    print(f"  {Y}anizium video{R}     – video indir")
-    print(f"  {Y}anizium subtitle{R}  – altyazı indir")
-    sys.exit(1)
+
+def _browsers_path():
+    if sys.platform == 'win32':
+        return Path(os.environ.get('LOCALAPPDATA', Path.home() / 'AppData' / 'Local')) / 'ms-playwright'
+    elif sys.platform == 'darwin':
+        return Path.home() / 'Library' / 'Caches' / 'ms-playwright'
+    else:
+        return Path.home() / '.cache' / 'ms-playwright'
+
+
+def ensure_browser():
+    if glob.glob(str(_browsers_path() / 'chromium_headless_shell-*')):
+        return
+    print(f"{Y}İlk çalıştırma: tarayıcı indiriliyor, lütfen bekleyin...{R}")
+    if getattr(sys, 'frozen', False):
+        node = os.path.join(sys._MEIPASS, 'playwright', 'driver',
+                            'node.exe' if sys.platform == 'win32' else 'node')
+        cli  = os.path.join(sys._MEIPASS, 'playwright', 'driver', 'package', 'cli.js')
+        cmd  = [node, cli, 'install', 'chromium-headless-shell']
+    else:
+        cmd = [sys.executable, '-m', 'playwright', 'install', 'chromium-headless-shell']
+    subprocess.run(cmd, check=True)
+
+
+def menu():
+    print(f"\n{B}{C}=== Anizium Downloader ==={R}")
+    print(f"  {Y}1{R}. Video indir")
+    print(f"  {Y}2{R}. Altyazı indir")
+    print(f"  {Y}0{R}. Çıkış\n")
+    choice = input(f"{B}Seçim: {R}").strip()
+    if choice == '1':
+        return 'video'
+    elif choice == '2':
+        return 'subtitle'
+    elif choice == '0':
+        sys.exit(0)
+    else:
+        print(f"{C}Geçersiz seçim.{R}")
+        return menu()
+
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        usage()
+    ensure_browser()
 
-    cmd = sys.argv[1].lower()
+    if len(sys.argv) >= 2:
+        cmd = sys.argv[1].lower()
+    else:
+        cmd = menu()
 
     if cmd == "video":
         from downloader import main
@@ -28,4 +65,8 @@ if __name__ == "__main__":
         from subtitle_downloader import main
         main()
     else:
-        usage()
+        print(f"{C}Bilinmeyen komut: {cmd}{R}")
+        sys.exit(1)
+
+    if not sys.argv[1:]:
+        input(f"\n{Y}Çıkmak için Enter'a basın...{R}")

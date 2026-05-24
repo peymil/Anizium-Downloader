@@ -8,7 +8,6 @@ def run(cmd):
 
 
 def main():
-    run(["playwright", "install", "chromium-headless-shell"])
     run([sys.executable, "-m", "PyInstaller", "anizium.spec", "--noconfirm"])
     print("\nBuild tamamlandi -> dist/anizium/anizium.exe")
 
