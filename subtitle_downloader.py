@@ -84,7 +84,31 @@ def main():
         try:
             page.goto("https://anizium.co/login")
             page.wait_for_load_state("networkidle")
-            page.locator('#value').fill(username_str)
+
+            # /login'e gidilemiyorsa landing'deki "Giriş Yap" linkine tıkla
+            if "/login" not in page.url:
+                logging.info(f"Yönlendirme tespit edildi: {page.url} — .nav__login tıklanıyor...")
+                page.locator("a.nav__login").click(timeout=5000)
+                page.wait_for_load_state("networkidle")
+
+            # Kullanıcı adı alanı için birden fazla selector dene
+            username_selector = None
+            for sel in ['#value', '#username', '#email', 'input[name="username"]', 'input[name="email"]', 'input[type="text"]']:
+                try:
+                    page.wait_for_selector(sel, timeout=3000)
+                    username_selector = sel
+                    break
+                except Exception:
+                    continue
+
+            if not username_selector:
+                inputs = page.evaluate("() => Array.from(document.querySelectorAll('input')).map(i => ({id: i.id, name: i.name, type: i.type}))")
+                logging.error(f"Kullanıcı adı alanı bulunamadı. Mevcut input'lar: {inputs}")
+                browser.close()
+                return
+
+            logging.info(f"Kullanıcı adı alanı bulundu: {username_selector}")
+            page.locator(username_selector).fill(username_str)
             page.locator('#password').fill(password_str)
             page.locator('#loginSubmit').click()
             page.wait_for_load_state("networkidle", timeout=15000)
