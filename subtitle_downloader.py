@@ -1,16 +1,20 @@
+import sys
 import os
 import logging
 import re
 import json
+
+if getattr(sys, 'frozen', False):
+    os.environ['PLAYWRIGHT_BROWSERS_PATH'] = os.path.join(sys._MEIPASS, 'ms-playwright')
+
 from playwright.sync_api import sync_playwright
 
-# Windows terminali ANSI renk destekle
 os.system("")
-C  = "\033[96m"   # Cyan  – başlıklar
-Y  = "\033[93m"   # Yellow – listeler / promptlar
-G  = "\033[92m"   # Green  – bilgi/otomatik
-R  = "\033[0m"    # Reset
-B  = "\033[1m"    # Bold
+C  = "\033[96m"
+Y  = "\033[93m"
+G  = "\033[92m"
+R  = "\033[0m"
+B  = "\033[1m"
 
 logging.basicConfig(
     level=logging.INFO,

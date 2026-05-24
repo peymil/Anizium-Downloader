@@ -1,15 +1,19 @@
+import sys
 import os
 import logging
 import re
+
+if getattr(sys, 'frozen', False):
+    os.environ['PLAYWRIGHT_BROWSERS_PATH'] = os.path.join(sys._MEIPASS, 'ms-playwright')
+
 from playwright.sync_api import sync_playwright
 
-# Windows terminali ANSI renk destekle
 os.system("")
-C  = "\033[96m"   # Cyan  – başlıklar
-Y  = "\033[93m"   # Yellow – listeler
-G  = "\033[92m"   # Green  – bilgi/otomatik
-R  = "\033[0m"    # Reset
-B  = "\033[1m"    # Bold
+C  = "\033[96m"
+Y  = "\033[93m"
+G  = "\033[92m"
+R  = "\033[0m"
+B  = "\033[1m"
 
 logging.basicConfig(
     level=logging.INFO,
@@ -311,14 +315,7 @@ def main():
         if is_movie:
             episodes_to_download = [1]
 
-        # ─────────────────────────────────────────────────────────────────────
-        # Yardımcı: /anime/source API'sini doğrudan çağır, JSON döndür
-        # ─────────────────────────────────────────────────────────────────────
         def fetch_source(ep_no):
-            """
-            İlgili bölümün kaynak verisini döndürür: {"success":true/false, "subtitles":[], "groups":[]}
-            Başarısız/hata durumunda None döner.
-            """
             api_url = (
                 f"https://api.anizium.co/anime/source"
                 f"?id={anime_id}&season={secilen_sezon}&episode={ep_no}"
@@ -350,9 +347,6 @@ def main():
                     pass
             return captured[0]
 
-        # ─────────────────────────────────────────────────────────────────────
-        # Probe: ilk bölümden dub ve altyazı seçeneklerini öğren
-        # ─────────────────────────────────────────────────────────────────────
         print("\n[INFO] Mevcut diller ve altyazılar kontrol ediliyor...")
         first_ep = episodes_to_download[0]
         probe_data = fetch_source(first_ep)
