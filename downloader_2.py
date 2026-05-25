@@ -489,11 +489,15 @@ def main():
 
             video_url = best_item["link"]
             safe_name = "".join([c for c in anime_name if c.isalnum() or c in (" ", "-", "_")]).replace(" ", "_")
+            quality_str = str(best_item.get("quality", 0)) + "p"
+            ep_folder = os.path.join(
+                download_path,
+                f"{safe_name}_{quality_str}_season{int(secilen_sezon):02d}_{chosen_dil_eki}"
+            )
+            os.makedirs(ep_folder, exist_ok=True)
 
-            if is_movie:
-                file_name = os.path.join(download_path, f"{safe_name}_film_{chosen_dil_eki}.mp4")
-            else:
-                file_name = os.path.join(download_path, f"{safe_name}_S{int(secilen_sezon):02d}E{ep:02d}_{chosen_dil_eki}.mp4")
+            ep_file = "film" if is_movie else f"E{ep:02d}"
+            file_name = os.path.join(ep_folder, f"{ep_file}.mp4")
 
             logging.info(f"Video URL: {video_url}")
             logging.info(f"Dosya: {file_name}")
@@ -507,7 +511,7 @@ def main():
                     ep_subtitles[0]   # yoksa ilki
                 )
                 sub_url = ep_sub["link"]
-                sub_file_name = file_name.replace(".mp4", ".vtt")
+                sub_file_name = os.path.join(ep_folder, f"{ep_file}.{ep_sub['group']}.srt")
                 logging.info(f"Altyazı: {sub_url}")
                 try:
                     response = page.request.get(sub_url)
