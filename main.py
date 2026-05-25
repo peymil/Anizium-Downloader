@@ -25,17 +25,21 @@ B = "\033[1m"
 
 
 def ensure_browser():
-    if glob.glob(str(_browsers_path() / 'chromium_headless_shell-*')):
-        return
-    print(f"{Y}İlk çalıştırma: tarayıcı indiriliyor, lütfen bekleyin...{R}")
     if getattr(sys, 'frozen', False):
         node = os.path.join(sys._MEIPASS, 'playwright', 'driver',
                             'node.exe' if sys.platform == 'win32' else 'node')
         cli  = os.path.join(sys._MEIPASS, 'playwright', 'driver', 'package', 'cli.js')
         cmd  = [node, cli, 'install', 'chromium-headless-shell']
+        # Always run install in the frozen exe — Playwright CLI is idempotent and exits
+        # immediately if the correct revision is already present.  A glob check is not
+        # enough because it can match an old revision while the bundled driver expects
+        # a newer one, which causes the "Playwright was just installed" error at launch.
+        subprocess.run(cmd, check=True)
     else:
-        cmd = [sys.executable, '-m', 'playwright', 'install', 'chromium-headless-shell']
-    subprocess.run(cmd, check=True)
+        if glob.glob(str(_browsers_path() / 'chromium_headless_shell-*')):
+            return
+        print(f"{Y}İlk çalıştırma: tarayıcı indiriliyor, lütfen bekleyin...{R}")
+        subprocess.run([sys.executable, '-m', 'playwright', 'install', 'chromium-headless-shell'], check=True)
 
 
 def menu():
