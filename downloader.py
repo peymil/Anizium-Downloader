@@ -485,11 +485,11 @@ def main():
             quality_str = str(best_item.get("quality", 0)) + "p"
             ep_folder = os.path.join(
                 download_path,
-                f"{safe_name}_S{int(secilen_sezon):02d}_{quality_str}_{chosen_dil_eki}"
+                f"{safe_name}_{quality_str}_{chosen_dil_eki}"
             )
             os.makedirs(ep_folder, exist_ok=True)
 
-            file_name = os.path.join(ep_folder, f"{safe_name}.mp4")
+            file_name = os.path.join(ep_folder, f"S{int(secilen_sezon):02d}_E{int(ep):02d}.mp4")
 
             logging.info(f"Video URL: {video_url}")
             logging.info(f"Dosya: {file_name}")
@@ -503,7 +503,7 @@ def main():
                     ep_subtitles[0]   # yoksa ilki
                 )
                 sub_url = ep_sub["link"]
-                sub_file_name = os.path.join(ep_folder, f"{safe_name}.{ep_sub['group']}.srt")
+                sub_file_name = os.path.join(ep_folder, f"S{int(secilen_sezon):02d}_E{int(ep):02d}.{ep_sub['group']}.srt")
                 logging.info(f"Altyazı: {sub_url}")
                 try:
                     response = page.request.get(sub_url)
